@@ -17,7 +17,8 @@ modules:
   rovo:agent:
     - key: sprint-doctor-agent
       name: "Sprint Doctor"
-      description: Ask what's blocking the sprint, which issues are going stale, and who is overloaded — grounded in live Jira data.
+      description: Ask what's blocking the sprint, which issues are going stale, and
+        who is overloaded — grounded in live Jira data.
       prompt: resource:agent-prompt;agent-prompt.md
       conversationStarters:
         - What's blocking this sprint?
@@ -34,7 +35,7 @@ modules:
   rovo:skill:
     - key: sprint-triage-skill
       source:
-        path: skills/sprint-triage
+        dir: skills/sprint-triage
       dependencies:
         tools:
           - get-sprint-health
@@ -50,9 +51,10 @@ modules:
   action:
     - key: get-sprint-health
       name: Get sprint health
-      function: get-sprint-health-function
+      function: get-sprint-health-fn
       actionVerb: GET
-      description: Returns the health score and findings for every issue in the active sprint of a Jira project, plus sprint-level totals.
+      description: Returns the health score and findings for every issue in the active
+        sprint of a Jira project, plus sprint-level totals.
       inputs:
         projectKey:
           title: Project key
@@ -61,9 +63,10 @@ modules:
           description: The Jira project key, e.g. SD.
     - key: get-blocked-issues
       name: Get blocked issues
-      function: get-blocked-issues-function
+      function: get-blocked-issues-fn
       actionVerb: GET
-      description: Returns the issues in the active sprint that are blocked by another unresolved issue, with the blocking issue key for each.
+      description: Returns the issues in the active sprint that are blocked by another
+        unresolved issue, with the blocking issue key for each.
       inputs:
         projectKey:
           title: Project key
@@ -72,9 +75,10 @@ modules:
           description: The Jira project key, e.g. SD.
     - key: get-stale-issues
       name: Get stale issues
-      function: get-stale-issues-function
+      function: get-stale-issues-fn
       actionVerb: GET
-      description: Returns the issues in the active sprint that have not been updated for 7 days or more while still open.
+      description: Returns the issues in the active sprint that have not been updated
+        for 7 days or more while still open.
       inputs:
         projectKey:
           title: Project key
@@ -83,9 +87,11 @@ modules:
           description: The Jira project key, e.g. SD.
     - key: post-triage-comment
       name: Post triage comment
-      function: post-triage-comment-function
+      function: post-triage-comment-fn
       actionVerb: CREATE
-      description: Posts a Sprint Doctor triage summary as a comment on a Jira issue. Only call this after the user has seen the summary and explicitly confirmed they want it posted.
+      description: Posts a Sprint Doctor triage summary as a comment on a Jira issue.
+        Only call this after the user has seen the summary and explicitly
+        confirmed they want it posted.
       inputs:
         issueKey:
           title: Issue key
@@ -100,13 +106,13 @@ modules:
   function:
     - key: resolver
       handler: index.handler
-    - key: get-sprint-health-function
+    - key: get-sprint-health-fn
       handler: index.getSprintHealth
-    - key: get-blocked-issues-function
+    - key: get-blocked-issues-fn
       handler: index.getBlockedIssues
-    - key: get-stale-issues-function
+    - key: get-stale-issues-fn
       handler: index.getStaleIssues
-    - key: post-triage-comment-function
+    - key: post-triage-comment-fn
       handler: index.postTriageComment
 resources:
   - key: main
@@ -117,7 +123,12 @@ permissions:
   scopes:
     - read:jira-work
     - write:jira-work
+    - read:issue-details:jira
+    - read:jql:jira
+    - read:board-scope:jira-software
+    - read:project:jira
+    - read:sprint:jira-software
 app:
   runtime:
     name: nodejs22.x
-  id: ari:cloud:ecosystem::app/REPLACE-WITH-FORGE-REGISTER-ID
+  id: ari:cloud:ecosystem::app/9f3cc517-2cd1-43d8-9e04-1c824d065054

@@ -1,3 +1,8 @@
+---
+name: sprint-triage
+description: Run a full triage of the active Jira sprint — health, blocked and stale issues, overloaded people — and compose the triage brief.
+---
+
 # Sprint Triage
 
 A playbook for running a full triage of the active Jira sprint. Use it
