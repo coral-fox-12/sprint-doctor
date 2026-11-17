@@ -1,0 +1,123 @@
+modules:
+  jira:issuePanel:
+    - key: sprint-doctor-issue-panel
+      resource: main
+      resolver:
+        function: resolver
+      render: native
+      title: Sprint Doctor
+      icon: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+  jira:projectPage:
+    - key: sprint-doctor-project-page
+      resource: main
+      resolver:
+        function: resolver
+      render: native
+      title: Sprint Doctor
+  rovo:agent:
+    - key: sprint-doctor-agent
+      name: "Sprint Doctor"
+      description: Ask what's blocking the sprint, which issues are going stale, and who is overloaded — grounded in live Jira data.
+      prompt: resource:agent-prompt;agent-prompt.md
+      conversationStarters:
+        - What's blocking this sprint?
+        - Which issues are going stale?
+        - Who is overloaded right now?
+        - Give me the sprint triage brief
+      actions:
+        - get-sprint-health
+        - get-blocked-issues
+        - get-stale-issues
+        - post-triage-comment
+      skills:
+        - sprint-triage-skill
+  rovo:skill:
+    - key: sprint-triage-skill
+      source:
+        path: skills/sprint-triage
+      dependencies:
+        tools:
+          - get-sprint-health
+          - get-blocked-issues
+          - get-stale-issues
+  rovo:mcp:
+    - key: sprint-doctor-mcp
+      name: Sprint Doctor MCP
+      tools:
+        - get-sprint-health
+        - get-blocked-issues
+        - get-stale-issues
+  action:
+    - key: get-sprint-health
+      name: Get sprint health
+      function: get-sprint-health-function
+      actionVerb: GET
+      description: Returns the health score and findings for every issue in the active sprint of a Jira project, plus sprint-level totals.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, e.g. SD.
+    - key: get-blocked-issues
+      name: Get blocked issues
+      function: get-blocked-issues-function
+      actionVerb: GET
+      description: Returns the issues in the active sprint that are blocked by another unresolved issue, with the blocking issue key for each.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, e.g. SD.
+    - key: get-stale-issues
+      name: Get stale issues
+      function: get-stale-issues-function
+      actionVerb: GET
+      description: Returns the issues in the active sprint that have not been updated for 7 days or more while still open.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, e.g. SD.
+    - key: post-triage-comment
+      name: Post triage comment
+      function: post-triage-comment-function
+      actionVerb: CREATE
+      description: Posts a Sprint Doctor triage summary as a comment on a Jira issue. Only call this after the user has seen the summary and explicitly confirmed they want it posted.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: The Jira issue key to comment on, e.g. SD-123.
+        summary:
+          title: Triage summary
+          type: string
+          required: true
+          description: The triage summary text to post as the comment body.
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: get-sprint-health-function
+      handler: index.getSprintHealth
+    - key: get-blocked-issues-function
+      handler: index.getBlockedIssues
+    - key: get-stale-issues-function
+      handler: index.getStaleIssues
+    - key: post-triage-comment-function
+      handler: index.postTriageComment
+resources:
+  - key: main
+    path: src/frontend/index.jsx
+  - key: agent-prompt
+    path: prompts
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+app:
+  runtime:
+    name: nodejs22.x
+  id: ari:cloud:ecosystem::app/REPLACE-WITH-FORGE-REGISTER-ID

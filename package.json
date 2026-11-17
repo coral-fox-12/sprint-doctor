@@ -1,0 +1,1 @@
+{"dependencies":{"@forge/api":"^6.1.0","@forge/bridge":"^7.0.0","@forge/react":"^12.0.0","@forge/resolver":"^2.0.0"},"description":"Sprint Doctor — a Jira Forge app that health-checks a sprint (Codegeist 2026 entry)","name":"sprint-doctor","private":true,"scripts":{"demo":"node demo/demo-harness.mjs","test":"node --test tests/triage.test.mjs"},"type":"module","version":"0.1.0"}
