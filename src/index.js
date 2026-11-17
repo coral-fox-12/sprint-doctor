@@ -20,7 +20,7 @@
  */
 
 import api, { route } from '@forge/api';
-import Resolver from '@forge/resolver';
+import { makeResolver } from '@forge/resolver';
 import { normalizeIssue, activeSprintJql } from './lib/jira-adapter.js';
 import { scoreSprint, renderBrief } from './lib/triage.js';
 
@@ -137,24 +137,20 @@ export async function postTriageComment(payload) {
 
 // --- UI Kit resolver (issue panel + project page call these) ---
 
-const resolver = new Resolver();
-
-resolver.define('getIssueHealth', async (req) => {
-  const { issueKey, projectKey } = req.payload;
-  const data = await getSprintHealthData(projectKey);
-  const issue = data.results.find((r) => r.key === issueKey);
-  if (!issue) return { error: `Issue ${issueKey} is not in the active sprint.` };
-  return { issue, sprintScore: data.score, sprintLevel: data.level };
+export const handler = makeResolver({
+  getIssueHealth: async (req) => {
+    const { issueKey, projectKey } = req.payload;
+    const data = await getSprintHealthData(projectKey);
+    const issue = data.results.find((r) => r.key === issueKey);
+    if (!issue) return { error: `Issue ${issueKey} is not in the active sprint.` };
+    return { issue, sprintScore: data.score, sprintLevel: data.level };
+  },
+  getSprintBoard: async (req) => {
+    const data = await getSprintHealthData(req.payload.projectKey);
+    return data;
+  },
+  getProjectKey: async (req) => {
+    // The panel context carries the project key; the frontend passes it in.
+    return { projectKey: req.payload.projectKey };
+  },
 });
-
-resolver.define('getSprintBoard', async (req) => {
-  const data = await getSprintHealthData(req.payload.projectKey);
-  return data;
-});
-
-resolver.define('getProjectKey', async (req) => {
-  // The panel context carries the project key; the frontend passes it in.
-  return { projectKey: req.payload.projectKey };
-});
-
-export const handler = resolver.getDefinitions();

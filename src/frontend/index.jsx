@@ -11,7 +11,8 @@
  * the local tests; it is validated by `forge lint` / `forge deploy`
  * (parent step: Atlassian account).
  */
-import ForgeUI, { render, Fragment, Text, Section, Heading, Lozenge, useProductContext, useState, useEffect } from '@forge/react';
+import React, { Fragment, useState, useEffect } from 'react';
+import ForgeReconciler, { Text, Heading, Lozenge, useProductContext } from '@forge/react';
 import { invoke } from '@forge/bridge';
 import { SprintBoard } from './project-page.jsx';
 
@@ -40,14 +41,14 @@ const IssueCard = ({ issueKey, projectKey }) => {
   const { issue } = data;
   return (
     <Fragment>
-      <Section>
+      <Fragment>
         <Heading size="medium">
           {`Sprint Doctor — ${issue.key}: ${issue.score}/100 (${issue.level})`}
         </Heading>
         <Lozenge text={issue.level} appearance={LEVEL_TONE[issue.level] || 'default'} />
         <Text>{`Sprint health overall: ${data.sprintScore}/100 (${data.sprintLevel}).`}</Text>
-      </Section>
-      <Section>
+      </Fragment>
+      <Fragment>
         <Heading size="small">Findings</Heading>
         {issue.findings.length === 0 ? (
           <Text>No issues found. This issue looks healthy.</Text>
@@ -59,19 +60,23 @@ const IssueCard = ({ issueKey, projectKey }) => {
             </Fragment>
           ))
         )}
-      </Section>
+      </Fragment>
     </Fragment>
   );
 };
 
 const App = () => {
-  const { extension } = useProductContext();
+  // useProductContext() is async: it returns undefined on the first render
+  // and fills in once view.getContext() resolves — never destructure it blind.
+  const productContext = useProductContext();
+  const extension = productContext?.extension;
   const issueKey = extension?.issue?.key;
   const projectKey = extension?.project?.key || (issueKey ? issueKey.split('-')[0] : null);
 
+  if (!productContext) return <Text>Loading Sprint Doctor…</Text>;
   if (issueKey) return <IssueCard issueKey={issueKey} projectKey={projectKey} />;
   if (projectKey) return <SprintBoard projectKey={projectKey} />;
   return <Text>Sprint Doctor needs a Jira issue or project context to run.</Text>;
 };
 
-export const run = render(<App />);
+export const run = ForgeReconciler.render(<App />);
