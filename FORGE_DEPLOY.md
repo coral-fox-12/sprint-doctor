@@ -1,6 +1,20 @@
-# Sprint Doctor — Forge deploy status (2026-11-17)
+# Sprint Doctor — Forge deploy status (2026-11-17, updated 2026-11-18)
 
-## DEPLOYED + INSTALLED — 2026-11-17 ~11:50 +07
+## PRODUCTION DEPLOYED + INSTALLED — 2026-11-18 ~22:05 +07
+- **App ID:** `ari:cloud:ecosystem::app/9f3cc517-2cd1-43d8-9e04-1c824d065054`
+- **App version:** 2.0.0 (major version 2; manifest has no explicit version field — Forge auto-versions)
+- **Repo state:** commit `644df40` (== origin/main, verified by fetch; nothing pushed)
+- **Production installation ID:** `87f7999f-e5d9-4cbe-b5a5-f8b0830c9624` — **Status: Up-to-date**, installed in Jira on **https://coral-fox-12.atlassian.net** (production env)
+- **Development installation ID:** `d72e5d3a-150a-4a06-8035-66a7cd380860` — also **Up-to-date** (unchanged)
+- **Developer console (installations):** https://developer.atlassian.com/console/myapps/9f3cc517-2cd1-43d8-9e04-1c824d065054/monitoring/installations
+- **Distribution:** https://developer.atlassian.com/console/myapps/9f3cc517-2cd1-43d8-9e04-1c824d065054/manage/distribution (public installation link can be generated here if judges need to install on their own site — NOT yet generated; the current install is on our own dev site)
+- **Production install link (for judges):** Jira board with the app live — https://coral-fox-12.atlassian.net/jira/software/projects/SD/boards/1 (Sprint Doctor issue panel + project page; Rovo agent on the site)
+- **Verified live 22:05–22:10 +07 18/11:** `forge install list` shows production install Up-to-date; Jira REST (Basic auth) 200s — /myself (Coral Fox), board 1 "SD board", project SD, **Sprint 1 ACTIVE** 2026-11-17 → 2026-12-01 with SD-1..SD-6. Sanity: `npm test` 14/14 pass, `forge lint` No issues found.
+- **Panel caveat:** the production panel was NOT re-checked visually in a browser (subagent has no live browser); the dev panel was verified live 17/11 and production is identical code/commit/manifest. Parent: open the board URL once to eyeball the production panel before Devpost submit.
+- **How it was done:** Forge CLI 15.1.0 reinstalled at /tmp/forge-install (wiped again by VM replacement #24; same install command as 17/11); `forge deploy --environment production` + `forge install --environment production --site coral-fox-12.atlassian.net --product jira --confirm-scopes --non-interactive`, all with `LD_PRELOAD=$PWD/.forge-env/nochown.so` (lint/deploy failed with EPERM chown without it — forge.sh alone does not set LD_PRELOAD). Token "forge-deploy" still valid (expires 2026-11-24).
+- **Devpost:** nothing blocks the submit — production install is live and linkable. Only open item: a public distribution link is NOT yet generated (only needed if judges must install on their own site); the board link above shows the app running.
+
+## DEPLOYED + INSTALLED (development) — 2026-11-17 ~11:50 +07
 - **App ID:** `ari:cloud:ecosystem::app/9f3cc517-2cd1-43d8-9e04-1c824d065054`
 - **App name:** Sprint Doctor — **deployed v2.0.0 to the development environment**
 - **Installation ID:** `d72e5d3a-150a-4a06-8035-66a7cd380860` — **Status: Up-to-date**, installed in Jira on **https://coral-fox-12.atlassian.net** (development env)
@@ -27,4 +41,4 @@
 
 ## Remaining (parent)
 - Demo video (by 20/12), Devpost submit via the separate account by 03:00 VN 23/12.
-- Consider a production deploy (`forge deploy --environment production` + install production) before submission if judges need a public install link; the current install is the development environment on our dev site.
+- ~~Production deploy~~ — DONE 18/11 (see top). Optional: generate a public distribution link in the developer console if judges need to install on their own site.
